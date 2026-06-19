@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>한 장의 마음 · 핱츄 편지 서비스</title>
+<meta name="description" content="한 장의 편지에 마음을 담아, 핱츄와 함께 소중한 사람에게 전해보세요." />
+
+<!-- UI 폰트: Pretendard -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<!-- 편지 출력용 손글씨 폰트 (Google Fonts) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Gamja+Flower&family=Single+Day&family=Gaegu:wght@400;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ 메인 화면 ============ -->
+  <section class="screen" id="screen-home" data-screen="home">
+    <div class="home">
+      <p class="home__emoji">💌</p>
+      <h1 class="home__title">한 장의 마음</h1>
+      <p class="home__subtitle">핱츄 편지 서비스</p>
+      <p class="home__desc">
+        짧은 한마디도 누군가에겐 오래 남는 선물이 됩니다.<br />
+        한 장의 편지에 마음을 담아,<br />
+        핱츄와 함께 소중한 사람에게 전해보세요.
+      </p>
+      <p class="home__note">
+        작성해주신 편지는 엽서 뒷면에 인쇄되어<br />
+        핱츄와 함께 전달됩니다.
+      </p>
+      <button class="btn btn--primary btn--lg" id="btn-start">편지 작성하기</button>
+    </div>
+  </section>
+
+  <!-- ============ 편지 작성 흐름 (STEP 1~6) ============ -->
+  <section class="screen" id="screen-flow" data-screen="flow" hidden>
+
+    <header class="flow__header">
+      <div class="flow__brand">💌 한 장의 마음</div>
+      <ol class="steps" id="steps">
+        <li data-step="1"><span>1</span>주문자</li>
+        <li data-step="2"><span>2</span>편지</li>
+        <li data-step="3"><span>3</span>디자인</li>
+        <li data-step="4"><span>4</span>글씨체</li>
+        <li data-step="5"><span>5</span>크기</li>
+        <li data-step="6"><span>6</span>미리보기</li>
+      </ol>
+    </header>
+
+    <div class="flow__body">
+
+      <!-- ---- STEP 1 : 주문자 정보 ---- -->
+      <div class="step" data-step="1">
+        <h2 class="step__title">주문자 정보</h2>
+        <p class="step__guide">주문 시 사용한 이름을 입력해주세요.</p>
+        <label class="field">
+          <span class="field__label">주문자명 <em>*</em></span>
+          <input type="text" id="f-orderer" class="input" placeholder="예) 김민혜" autocomplete="name" />
+          <span class="field__error" data-error="orderer"></span>
+        </label>
+      </div>
+
+      <!-- ---- STEP 2 : 편지 작성 ---- -->
+      <div class="step" data-step="2" hidden>
+        <h2 class="step__title">편지 작성</h2>
+
+        <div class="grid-2">
+          <label class="field">
+            <span class="field__label">날짜</span>
+            <input type="date" id="f-date" class="input" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">날씨</span>
+            <div class="chips" id="weather-chips">
+              <button type="button" class="chip" data-weather="맑음">맑음</button>
+              <button type="button" class="chip" data-weather="흐림">흐림</button>
+              <button type="button" class="chip" data-weather="구름">구름</button>
+              <button type="button" class="chip" data-weather="비">비</button>
+              <button type="button" class="chip" data-weather="눈">눈</button>
+            </div>
+            <input type="text" id="f-weather" class="input input--sm" placeholder="직접 입력도 가능해요" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field__label">받는 사람</span>
+          <div class="chips" data-fill="f-recipient">
+            <button type="button" class="chip" data-value="엄마에게">엄마에게</button>
+            <button type="button" class="chip" data-value="아빠에게">아빠에게</button>
+            <button type="button" class="chip" data-value="사랑하는 친구에게">사랑하는 친구에게</button>
+            <button type="button" class="chip" data-value="고마운 선생님께">고마운 선생님께</button>
+            <button type="button" class="chip" data-value="소중한 동료에게">소중한 동료에게</button>
+          </div>
+          <input type="text" id="f-recipient" class="input" placeholder="예) 사랑하는 엄마에게" />
+        </label>
+
+        <!-- AI 편지 도움 -->
+        <details class="assist" id="ai-assist">
+          <summary class="assist__summary">✦ AI 편지 도움받기</summary>
+          <div class="assist__body">
+            <h3 class="assist__title">어떤 분께, 어떤 마음을 전하고 싶으신가요?</h3>
+            <p class="assist__desc">
+              전하고 싶은 이야기나 상황을 편하게 적어주세요.
+              AI가 편지 초안 작성을 도와드릴게요.
+            </p>
+            <div class="chips chips--soft">
+              <button type="button" class="chip" data-fill-target="ai-input" data-value="시험을 앞둔 친구를 응원하고 싶어요.">시험을 앞둔 친구 응원</button>
+              <button type="button" class="chip" data-fill-target="ai-input" data-value="결혼하는 언니에게 축하의 마음을 전하고 싶어요.">언니 결혼 축하</button>
+              <button type="button" class="chip" data-fill-target="ai-input" data-value="부모님께 감사한 마음을 전하고 싶어요.">부모님께 감사</button>
+            </div>
+            <textarea id="ai-input" class="textarea textarea--sm" placeholder="예) 시험을 앞둔 친구를 응원하고 싶어요."></textarea>
+            <button type="button" class="btn btn--soft" id="btn-ai">편지 도움받기</button>
+            <p class="assist__principle">
+              AI는 편지를 대신 써드리는 것이 아니라,
+              당신의 마음을 표현할 수 있도록 초안을 제안해드려요.
+            </p>
+            <div class="assist__status" id="ai-status" hidden></div>
+          </div>
+        </details>
+
+        <label class="field">
+          <span class="field__label">
+            편지 내용
+            <span class="counter" id="content-counter">0자</span>
+          </span>
+          <textarea id="f-content" class="textarea" maxlength="500"
+            placeholder="소중한 마음을 천천히 적어주세요."></textarea>
+          <span class="field__hint">
+            소중한 마음이 충분히 전달될 수 있도록 50자 이상 작성해주세요. (50~500자)
+          </span>
+          <span class="field__error" data-error="content"></span>
+        </label>
+
+        <!-- 맞춤법 검사 -->
+        <div class="assist assist--inline">
+          <button type="button" class="btn btn--soft" id="btn-spell">맞춤법 검사하기</button>
+          <div class="assist__status" id="spell-status" hidden></div>
+          <button type="button" class="btn btn--soft" id="btn-spell-apply" hidden>수정본 적용하기</button>
+        </div>
+
+        <label class="field">
+          <span class="field__label">보내는 사람</span>
+          <div class="chips" data-fill="f-sender">
+            <button type="button" class="chip" data-value="민수 드림">민수 드림</button>
+            <button type="button" class="chip" data-value="딸이">딸이</button>
+            <button type="button" class="chip" data-value="아들이">아들이</button>
+            <button type="button" class="chip" data-value="사랑을 담아">사랑을 담아</button>
+            <button type="button" class="chip" data-value="감사한 마음을 담아">감사한 마음을 담아</button>
+          </div>
+          <input type="text" id="f-sender" class="input" placeholder="예) 민혜 드림" />
+        </label>
+      </div>
+
+      <!-- ---- STEP 3 : 엽서 디자인 선택 ---- -->
+      <div class="step" data-step="3" hidden>
+        <h2 class="step__title">엽서 디자인 선택</h2>
+        <p class="step__guide">마음에 드는 엽서 디자인을 골라주세요. (앞면 디자인만 선택해요)</p>
+        <div class="designs" id="designs">
+          <button type="button" class="design" data-design="노을의 마음" data-img="01-sunset.png">
+            <img src="01-sunset.png" alt="노을의 마음" loading="lazy" />
+            <span class="design__name">노을의 마음</span>
+          </button>
+          <button type="button" class="design" data-design="꽃다발의 마음" data-img="02-flower.png">
+            <img src="02-flower.png" alt="꽃다발의 마음" loading="lazy" />
+            <span class="design__name">꽃다발의 마음</span>
+          </button>
+          <button type="button" class="design" data-design="달콤한 응원" data-img="03-candy.png">
+            <img src="03-candy.png" alt="달콤한 응원" loading="lazy" />
+            <span class="design__name">달콤한 응원</span>
+          </button>
+          <button type="button" class="design" data-design="봄날의 편지" data-img="04-field.png">
+            <img src="04-field.png" alt="봄날의 편지" loading="lazy" />
+            <span class="design__name">봄날의 편지</span>
+          </button>
+          <button type="button" class="design" data-design="복을 전하는 마음" data-img="05-luckybag.png">
+            <img src="05-luckybag.png" alt="복을 전하는 마음" loading="lazy" />
+            <span class="design__name">복을 전하는 마음</span>
+          </button>
+        </div>
+        <span class="field__error" data-error="design"></span>
+      </div>
+
+      <!-- ---- STEP 4 : 글씨체 선택 ---- -->
+      <div class="step" data-step="4" hidden>
+        <h2 class="step__title">글씨체 선택</h2>
+        <p class="step__guide">편지에 어울리는 손글씨를 골라주세요.</p>
+        <div class="fonts" id="fonts">
+          <button type="button" class="font-card" data-font="adult">
+            <span class="font-card__label">어른 글씨</span>
+            <span class="font-card__sample font-adult">소중한 마음을 담아</span>
+          </button>
+          <button type="button" class="font-card" data-font="cute">
+            <span class="font-card__label">귀여운 글씨</span>
+            <span class="font-card__sample font-cute">소중한 마음을 담아</span>
+          </button>
+          <button type="button" class="font-card" data-font="clean">
+            <span class="font-card__label">깔끔한 글씨</span>
+            <span class="font-card__sample font-clean">소중한 마음을 담아</span>
+          </button>
+          <button type="button" class="font-card" data-font="child">
+            <span class="font-card__label">아이 글씨</span>
+            <span class="font-card__sample font-child">소중한 마음을 담아</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ---- STEP 5 : 글씨 크기 선택 ---- -->
+      <div class="step" data-step="5" hidden>
+        <h2 class="step__title">글씨 크기 선택</h2>
+        <p class="step__guide">편지에 인쇄될 글씨 크기를 골라주세요.</p>
+        <div class="sizes" id="sizes">
+          <button type="button" class="size-card" data-size="small"><span class="size-card__dot s1">가</span>작게</button>
+          <button type="button" class="size-card" data-size="normal"><span class="size-card__dot s2">가</span>보통</button>
+          <button type="button" class="size-card" data-size="large"><span class="size-card__dot s3">가</span>크게</button>
+          <button type="button" class="size-card" data-size="xlarge"><span class="size-card__dot s4">가</span>아주 크게</button>
+        </div>
+      </div>
+
+      <!-- ---- STEP 6 : 최종 미리보기 ---- -->
+      <div class="step" data-step="6" hidden>
+        <h2 class="step__title">최종 미리보기</h2>
+        <p class="step__guide">엽서 뒷면에 인쇄될 모습이에요. (90mm × 90mm 정사각형)</p>
+
+        <div class="preview-wrap">
+          <div class="postcard-frame" id="postcard-frame">
+            <!-- 실제 인쇄 해상도(1063px=90mm@300dpi)로 렌더되고, 화면에서는 축소 표시됩니다. -->
+            <div class="postcard" id="postcard">
+              <div class="postcard__inner" id="postcard-inner">
+                <div class="postcard__meta">
+                  <span id="pc-date"></span>
+                  <span id="pc-weather"></span>
+                </div>
+                <div class="postcard__recipient" id="pc-recipient"></div>
+                <div class="postcard__content" id="pc-content"></div>
+                <div class="postcard__sender" id="pc-sender"></div>
+              </div>
+            </div>
+          </div>
+
+          <dl class="preview-info">
+            <div><dt>글씨체</dt><dd id="pc-info-font"></dd></div>
+            <div><dt>글씨 크기</dt><dd id="pc-info-size"></dd></div>
+            <div><dt>선택 디자인</dt><dd id="pc-info-design"></dd></div>
+          </dl>
+        </div>
+      </div>
+
+    </div><!-- /flow__body -->
+
+    <footer class="flow__nav">
+      <button class="btn btn--ghost" id="btn-prev">이전</button>
+      <button class="btn btn--primary" id="btn-next">다음</button>
+      <button class="btn btn--primary" id="btn-submit" hidden>제출하기</button>
+    </footer>
+  </section>
+
+  <!-- ============ 제출 완료 화면 ============ -->
+  <section class="screen" id="screen-done" data-screen="done" hidden>
+    <div class="done">
+      <p class="done__emoji">💌</p>
+      <h1 class="done__title">편지가 정상적으로 접수되었습니다.</h1>
+      <p class="done__desc">
+        소중한 마음을 핱츄에 담아주셔서 감사합니다.<br /><br />
+        여러분의 따뜻한 마음이 잘 전달될 수 있도록<br />
+        정성껏 준비해 보내드리겠습니다.
+      </p>
+      <button class="btn btn--primary btn--lg" id="btn-home">홈으로 돌아가기</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- 제출 진행 오버레이 -->
+<div class="overlay" id="overlay" hidden>
+  <div class="overlay__box">
+    <div class="spinner"></div>
+    <p id="overlay-text">편지를 PDF로 만들고 있어요…</p>
+  </div>
+</div>
+
+<!-- 라이브러리: PDF 생성 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
